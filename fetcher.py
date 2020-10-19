@@ -15,7 +15,7 @@ print(pd.__version__)
 
 
 def ArchiveFromAPI():
-    url = 'https://api01.nve.no/hydrology/forecast/avalanche/v5.0.1/api/Archive/Warning/All/1/2017-12-01/2019-12-20/json'
+    url = 'https://api01.nve.no/hydrology/forecast/avalanche/v5.0.1/api/Archive/Warning/All/1/2017-12-01/2020-07-15/json'
 
     r = requests.get(url)
     data = r.text
