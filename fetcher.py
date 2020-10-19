@@ -260,7 +260,15 @@ def main():
     print(result)
     print(result.sum())
     print(result.corr())
-    result.to_csv("result1.csv", index=False)
+    file_content = result.to_csv(index=False)
+
+    # There are some weird stuff in the data that needs to be fixed
+    file_content = file_content.replace("--", "-")
+    file_content = file_content.replace("|", "")
+
+    f = open("dataset.csv", "w")
+    f.write(file_content)
+    f.close()
 
 
 def analyse():
