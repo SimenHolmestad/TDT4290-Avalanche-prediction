@@ -6,6 +6,7 @@ import sqlalchemy as sqla
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine import create_engine
 import holidays
+from io import StringIO
 
 import numpy as np
 from matplotlib import pyplot
@@ -19,7 +20,7 @@ def ArchiveFromAPI():
     r = requests.get(url)
     data = r.text
 
-    df = pd.read_json(data)
+    df = pd.read_json(StringIO(data))
 
     df = df.filter(items=['ValidFrom', 'RegionId', 'DangerLevel', "MountainWeather", "AvalancheProblems"])
 
