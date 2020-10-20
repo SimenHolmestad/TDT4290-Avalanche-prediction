@@ -6,95 +6,123 @@ import sqlalchemy as sqla
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine import create_engine
 import holidays
+import time
 from io import StringIO
 
-import numpy as np
-from matplotlib import pyplot
 
-print(pd.__version__)
+def get_avalanche_problem_data(forecast_df):
+    """Creates a dictionary containing data for the avalanche problems
+    given in an avalanche forecast.
+    """
+    avalanche_problem_dict = {}
+    valid_problem_ids = [0, 3, 5, 7, 10, 30, 45, 50]
+    avalanche_problem_features = ["AvalProbabilityId", "AvalCauseId", "DestructiveSizeId", "AvalTriggerSimpleId"]
+
+    # Create skeleton dictionary
+    for problem_id in valid_problem_ids:
+        for feature in avalanche_problem_features:
+            avalanche_problem_dict[feature + "_" + str(problem_id)] = []
+
+    # Loop through each row of dataframe
+    for i in range(len(forecast_df.index)):
+        # Create dictionary of zeros for avalanche problems in current row
+        # (Same format as avalalanche_problem_dict)
+        output_for_row = {}
+        for problem_id in valid_problem_ids:
+            for feature in avalanche_problem_features:
+                output_for_row[feature + "_" + str(problem_id)] = 0
+
+        # Get list of avalalanche problems
+        av_problem_list = forecast_df["AvalancheProblems"][i]
+
+        # Add data for each avalanche problem to output_for_row
+        for av_problem in av_problem_list:
+            av_problem_id = av_problem["AvalancheProblemTypeId"]
+            if av_problem_id in valid_problem_ids:
+                # Add avalanche problem data to current row
+                for feature in avalanche_problem_features:
+                    output_for_row[feature + "_" + str(av_problem_id)] = av_problem[feature]
+
+        # Add row data to output dictionary
+        for key, value in output_for_row.item():
+            avalanche_problem_dict[key].append(value)
+
+    return pd.DataFrame(avalanche_problem_dict)
 
 
-def ArchiveFromAPI():
-    url = 'https://api01.nve.no/hydrology/forecast/avalanche/v5.0.1/api/Archive/Warning/All/1/2017-12-01/2020-07-15/json'
+def get_mountain_weather_data(forecast_df):
+    possible_measurement_types = ["Nedbør", "Vindstyrke", "Temperatur"]
+    output_dict = {}
+    for feature in mountain_weather_features:
+        output_dict[feature] = []
 
-    r = requests.get(url)
-    data = r.text
+    # Loop through each row of dataframe
+    for i in range(len(forecast_df.index)):
+        mountain_weather_dict = forecast_df["MountainWeather"][i]
+        if ("CloudCoverId" in mountain_weather_dict.keys):
+            output_dict["CloudCoverId"].append(mountain_weather_dict["CloudCoverId"])
+        else:
+            output_dict["CloudCoverId"].append(0)
 
-    df = pd.read_json(StringIO(data))
+        measurement_types = forecast_df["MountainWeather"][i]["MeasurementTypes"]
+        for type_dict in measurement_types:
+            if type_dict["Name"] == "Nedbør":
+                pass
+            if type_dict["Name"] == "Temperatur":
+                pass
 
-    df = df.filter(items=['ValidFrom', 'RegionId', 'DangerLevel', "MountainWeather", "AvalancheProblems"])
 
-    df['ValidFrom'] = pd.to_datetime(df['ValidFrom'])
-    date_list = [date.date() for date in df['ValidFrom']]
-    new_df = df.filter(items=['RegionId', 'DangerLevel'])
-    new_df = new_df.rename(columns={"RegionId": 'region'})
 
     new_df["date"] = date_list
-    av_prob_list = []
     cloud_id_list = []
     nedbor_list = []
     vind_list = []
     temp_min_list = []
     temp_max_list = []
-    print(int(new_df.size / 3))
-    for i in range(int(new_df.size / 3)):
-        # column_dict = {
-        #     "Nedbør": ["Gjennomsnitt"],
-        #     "Vind": ["Styrke"],
-        #     "Temperatur": ["Maks", "Min"]
-        # }
-
+    print(len(new_df.index))
+    for i in range(len(new_df.index)):
         try:
-            cloud_id_list.append(df["MountainWeather"][i]["CloudCoverId"])
+            cloud_id_list.append(forecast_df["MountainWeather"][i]["CloudCoverId"])
         except TypeError:
             cloud_id_list.append(None)
 
-        # new_df["CloudCoverId"] = cloud_id_list
-        '''
-        for key in column_dict:
-            new_df[key] = fetch_mw(df, key, column_dict, i)
-
-        #cloud_id_list.append(df["MountainWeather"][i]["CloudCoverId"])
-        '''
         try:
-            for j in range(len(df["MountainWeather"][i]["MeasurementTypes"])):
-
+            for j in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"])):
                 # Nedbør
-                if df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Nedbør":
+                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Nedbør":
 
-                    for k in range(len(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
+                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
 
-                        if df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Gjennomsnitt":
+                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Gjennomsnitt":
                             try:
-                                nedbor_list.append(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
+                                nedbor_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
                             except TypeError:
                                 nedbor_list.append(None)
-
                 # Vind
-                if df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Vind":
+                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Vind":
 
-                    for k in range(len(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
+                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
 
-                        if df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Styrke":
+                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Styrke":
                             try:
-                                vind_list.append(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
+                                vind_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
                             except TypeError:
                                 vind_list.append(None)
 
                 # Temperatur
-                if df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Temperatur":
+                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Temperatur":
 
-                    for k in range(len(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
+                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
 
-                        if df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Maks":
+                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Maks":
                             try:
-                                temp_max_list.append(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
+                                temp_max_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
                             except TypeError:
                                 temp_max_list.append(None)
 
-                        if df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Min":
+                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Min":
                             try:
-                                temp_min_list.append(df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
+                                temp_min_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
                             except TypeError:
                                 temp_min_list.append(None)
 
@@ -104,62 +132,56 @@ def ArchiveFromAPI():
             temp_max_list.append(None)
             temp_min_list.append(None)
 
-        av_prob_dict = {
-            0: [0, 0, 0, 0],
-            3: [0, 0, 0, 0],
-            5: [0, 0, 0, 0],
-            7: [0, 0, 0, 0],
-            10: [0, 0, 0, 0],
-            30: [0, 0, 0, 0],
-            45: [0, 0, 0, 0],
-            50: [0, 0, 0, 0]
-        }
-
-        av_prob_row = df["AvalancheProblems"][i]
-
-        for prob in av_prob_row:
-            av_prob_dict[prob["AvalancheProblemTypeId"]] = [int(prob["AvalProbabilityId"]), int(prob["AvalCauseId"]), int(prob["DestructiveSizeId"]), int(prob["AvalTriggerSimpleId"])]
-
-        # print(av_prob_dict)
-        av_prob_list.append(av_prob_dict)
-
-    new_dict = {}
-
-    for j, key in enumerate(av_prob_dict):
-
-        new_dict["AvalProbabilityId_" + str(key)] = []
-        new_dict["AvalCauseId_" + str(key)] = []
-        new_dict["DestructiveSizeId_" + str(key)] = []
-        new_dict["AvalTriggerSimpleId_" + str(key)] = []
-
-        for aval_prob_day in av_prob_list:
-
-            av_prob_j = aval_prob_day[key]
-            # print("av_prob_j", av_prob_j)
-
-            new_dict["AvalProbabilityId_" + str(key)].append(av_prob_j[0])
-            new_dict["AvalCauseId_" + str(key)].append(av_prob_j[1])
-            new_dict["DestructiveSizeId_" + str(key)].append(av_prob_j[2])
-            new_dict["AvalTriggerSimpleId_" + str(key)].append(av_prob_j[3])
-
-        # print(new_dict)
     new_df["CloudCoverId"] = cloud_id_list
     new_df["Nedbor"] = nedbor_list
     new_df["Vindstyrke"] = vind_list
     new_df["Temperatur_min"] = temp_min_list
     new_df["Temperatur_max"] = temp_max_list
     av_prob_df = pd.DataFrame.from_dict(new_dict)
-    # print(av_prob_df)
-    # print(av_prob_df.isna().sum())
-    # print(new_df)
-    # print(new_df.isna().sum())
 
     avalanche_forecast_df = new_df.join(av_prob_df)
-    # print(avalanche_forecast_df)
     return avalanche_forecast_df
 
 
+def create_avalanche_forecast_url(seasons_to_check):
+    url_format_string = 'https://api01.nve.no/hydrology/forecast/avalanche/v5.0.1/api/Archive/Warning/All/1/{}/{}/json'
+    first_season = seasons_to_check[0]
+    last_season = seasons_to_check[-1]
+
+    # We start from first of december for the first season
+    first_date_string = str(first_season) + "-12-01"
+
+    # We end at 15th of june for the last season
+    last_date_string = str(last_season + 1) + "-06-15"
+
+    return url_format_string.format(first_date_string, last_date_string)
+
+
+def get_avalanche_forecast_data(seasons_to_check):
+    url = create_avalanche_forecast_url(seasons_to_check)
+
+    # Fetch forecast data
+    data = requests.get(url).text
+
+    # Create dataframe
+    forecast_df = pd.read_json(StringIO(data))
+
+    # Filter relevant inforrmation
+    forecast_df = forecast_df.filter(items=['ValidFrom', 'RegionId', 'DangerLevel', "MountainWeather", "AvalancheProblems"])
+
+    # Convert datetime strings to date values
+    forecast_df['date'] = [date.date() for date in pd.to_datetime(forecast_df['ValidFrom'])]
+    forecast_df = forecast_df.rename(columns={"RegionId": 'region'})
+
+    base_data_df = forecast_df.filter(items=['date', 'region', 'DangerLevel'])
+    mountain_weather_df = get_mountain_weather_data(forecast_df)
+    avalanche_problem_df = get_avalanche_problem_data(forecast_df)
+
+    return pd.join([base_data_df, mountain_weather_df, avalanche_problem_df])
+
+
 def create_db_connection() -> Engine:
+    """Creates engine for accessing the database """
     server = 'avalanche-server.database.windows.net,1433'
     database = 'avalanche-db'
     username = config('DBUSERNAME')
@@ -174,6 +196,11 @@ def create_db_connection() -> Engine:
 
 
 def get_list_of_avalanche_tuples():
+    """Retrieves data from database and create a list of tuples on the
+    form (date, region) where each tuple corresponds to a day and a
+    region where an avalanche have happened.
+
+    """
     engine = create_db_connection()
     connection = engine.connect()
     metadata = sqla.MetaData()
@@ -184,29 +211,39 @@ def get_list_of_avalanche_tuples():
     regions = df['forecast_region']
     times = df['time']
 
+    # Convert time-info to date-info
     dates = [date.date() for date in times]
     return [(dates[i], regions[i]) for i in range(len(dates))]
 
 
 def get_avalanche_data(regions, dates):
+    """Takes two lists of the same length containing regions and dates.
+    Returns a list of the same length with a 1 if an avalanche
+    happened for that region and date combination, otherwise 0.
+
+    This function might be optimized further.
+    """
+    # Start by creating a list of correct length with just zeros.
     avalanches = [0 for x in range(len(regions))]
+
+    # Get data for where the avalanches have been.
     avalanche_tuples = get_list_of_avalanche_tuples()
 
-    number_of_ones = 0
+    # Check every avalanche incident with all dates and regions in list
     for date_to_check, region in avalanche_tuples:
         for i in range(len(regions)):
+            # Check if both date and region corresponds
             if date_to_check == dates[i] and region == regions[i]:
-                if avalanches[i] == 0:
-                    number_of_ones += 1
                 avalanches[i] = 1
-    print("Number of ones:", number_of_ones)
+                break
+
     return avalanches
 
 
-def main():
-    years_to_check = [2017, 2018, 2019]
-    list_of_regions = [3003, 3006, 3007, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3022, 3023, 3024, 3027, 3028, 3029, 3031, 3032, 3034, 3035, 3037]
-
+def create_calendar_and_region_data(years_to_check, list_of_regions):
+    """Returns a dictionary containing lists of equal length. The lists
+    would have one row for each combination of year and region
+    """
     regions = []
     dates = []
     weekends = []
@@ -216,7 +253,7 @@ def main():
     norwegian_holidays = holidays.Norway()
 
     for year_to_check in years_to_check:
-        # Set current date to 1. of september the specified year
+        # Set current date to 1. of december of the specified year
         current_date = date(year_to_check, 12, 1)
 
         # Continue until date is 15. of june the following year
@@ -238,57 +275,49 @@ def main():
             # Go to next day
             current_date = current_date + timedelta(days=1)
 
-    avalanches = get_avalanche_data(regions, dates)
-
-    data_dict = {
+    # Return dectionary with all data
+    return {
         'region': regions,
         'date': dates,
         'weekday': weekdays,
         'weekend': weekends,
         'red_day': red_days,
-        'avalanche': avalanches
     }
-    df = pd.DataFrame(data_dict)
-    # df.to_csv("df.csv", index=False)
-    # print(df)
-    df_avalanche = ArchiveFromAPI()
-    # df_avalanche.to_csv("df_avalanche.csv", index=False)
-    print("Fetched Avalanche Forecast")
-    # print(df_avalanche)
-    result = pd.merge(df, df_avalanche, how='inner', on=['date', 'region'])
 
-    print(result)
-    print(result.sum())
-    print(result.corr())
-    file_content = result.to_csv(index=False)
 
-    # There are some weird stuff in the data that needs to be fixed
-    file_content = file_content.replace("--", "-")
-    file_content = file_content.replace("|", "")
+def main():
+    # For seasons, 2017 means the season 2017-2018
+    seasons_to_check = [2017, 2018, 2019]
+    list_of_regions = [3003, 3006, 3007, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3022, 3023, 3024, 3027, 3028, 3029, 3031, 3032, 3034, 3035, 3037]
 
+    # Create dictionary containing calendar an region info
+    data_dict = create_calendar_and_region_data(seasons_to_check, list_of_regions)
+
+    # Add avalanche information
+    avalanches = get_avalanche_data(data_dict['region'], data_dict['date'])
+    data_dict['avalanches'] = avalanches
+
+    # Create dataframe for current data
+    region_date_and_avalanche_df = pd.DataFrame(data_dict)
+
+    # Create dataframe for historic avalanche forecast
+    avalanche_forecast_df = get_avalanche_forecast_data(seasons_to_check)
+
+    # Merge dataframes
+    dataset = pd.merge(region_date_and_avalanche_df, avalanche_forecast_df, how='inner', on=['date', 'region'])
+
+    # Create string containing csv data
+    dataset_file_content = dataset.to_csv(index=False)
+
+    # Fix some weird stuff happening in the data
+    dataset_file_content = dataset_file_content.replace("--", "-")
+    dataset_file_content = dataset_file_content.replace("|", "")
+
+    # Write dataset to file
     f = open("dataset.csv", "w")
-    f.write(file_content)
+    f.write(dataset_file_content)
     f.close()
-
-
-def analyse():
-    dataframe = pd.read_csv("df_avalanche.csv")
-    region_data = dataframe["region"]
-
-    regions, counts = np.unique(region_data, return_counts=True)
-
-    # print(dataframe.columns)
-    # print("antall incidents:", np.sum(dataframe["date"]))
-
-    pyplot.bar(regions, counts)
-    pyplot.title("Data points per region")
-    pyplot.xlabel("Region ID")
-    pyplot.ylabel("Data points")
-
-    pyplot.savefig("Observations_for_region.png")
-    pyplot.clf()
 
 
 if __name__ == "__main__":
     main()
-    # analyse()
