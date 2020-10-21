@@ -7,7 +7,7 @@ def Process():
     data_list = []
     dates = []
 
-    # Går gjennom dataframen og bytter ut strings i "Vindstyrke" med tall. Legger også datoene i en liste liste_dates.
+    # Loops thorough the dataframe and change the strings in "Vindstyrke" with numbers. Adds the dates in a list 'dates'.
     for i in df.index:
         dates.append(df["date"][i])
         df["Vindstyrke"] = df.replace(
@@ -20,14 +20,14 @@ def Process():
                             "Stille/svak vind": 6,
                             "Liten kuling": 7}})
 
-    # Gjør listen med datoene om til ett set så det bare blir en av hver dato
+    # Makes the list into a set so it only is one of each of the dates.
     set_date = set(dates)
 
-    # Her byttes hver dato i dataframen med mnd
+    # The date in the dataframe is changed with the month
     for i in set_date:
         df["date"] = df["date"].replace(i, int(i[5:7]))
 
-    # Her loopes det gjennom dataframen og verdiene legges til i en liste med lister. Hver liste er en rad.
+    # Loops thourgh the dataframe and the values is appended in a list of lists. Every list is a row.
     for ind in df.index:
         data_list.append([df["date"][ind], df["weekday"][ind], df["weekend"][ind], df["red_day"][ind], df["avalanche"][ind], df["DangerLevel"][ind],
                           df["CloudCoverId"][ind], df["Nedbor"][ind], df["Vindstyrke"][ind], df["Temperatur_min"][ind], df["Temperatur_max"][ind],
@@ -39,13 +39,13 @@ def Process():
                           df["AvalProbabilityId_30"][ind], df["AvalCauseId_30"][ind], df["DestructiveSizeId_30"][ind], df["AvalTriggerSimpleId_30"][ind],
                           df["AvalProbabilityId_45"][ind], df["AvalCauseId_45"][ind], df["DestructiveSizeId_45"][ind], df["AvalTriggerSimpleId_45"][ind],
                           df["AvalProbabilityId_50"][ind], df["AvalCauseId_50"][ind], df["DestructiveSizeId_50"][ind], df["AvalTriggerSimpleId_50"][ind]])
-
-    # Prosesserer listen med data til verdier mellom 0-1
+    
+    # Process the list with data to values between 0-1
     scaler = MinMaxScaler()
     scaler.fit(data_list)
     processed_data = scaler.transform(data_list)
 
-    # gjør den prossesserte dataen til en dataframe
+    # Makes the processed data to a dataframe
     df_processed_data = pd.DataFrame(processed_data)
     df_processed_data.columns = ['date', 'weekday', 'weekend', 'red_day', 'avalanche', 'danger_level', 'cloud_cover_id', 'nedbor', 'vind_styrke',
                                  'temperatur_min', 'temperatur_max', 'aval_probability_id_0', 'aval_cause_id_0', 'destructive_size_id_0', 'aval_trigger_simple_id_0',
@@ -56,5 +56,5 @@ def Process():
                                  'aval_cause_id_45', 'destructive_size_id_45', 'aval_trigger_simple_id_45', 'aval_probability_id_50', 'aval_cause_id_50',
                                  'destructive_size_id_50', 'aval_trigger_simple_id_50']
 
-    # Legger dataframen med den prosesserte dataen i csv-filen "processed_data.csv"
+    # Makes a csv file of the processed data.
     df_processed_data.to_csv("processed_data.csv", index=False)
