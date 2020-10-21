@@ -81,6 +81,32 @@ def make_bar_plots(dataframe):
     pyplot.clf()
 
     ###
+    # Incidents per month every year
+    ###
+    incidents_per_month = []
+    months = [1, 2, 3, 4, 5, 6, 12]
+    years = [2017, 2018, 2019, 2020]
+    month_names = ["1.17", "2.17", "3.17", "4.17", "5.17", "6.17", "12.17", 
+                    "1.18", "2.18", "3.18", "4.18", "5.18", "6.18", "12.18",
+                    "1.19", "2.19", "3.19", "4.19", "5.19", "6.19", "12.19",
+                    "1.20", "2.20", "3.20", "4.20", "5.20", "6.20", "12.20"]
+    dataframe['date'] = pd.to_datetime(dataframe['date'], errors='coerce')
+    for year in years:
+        for month in months:
+            data_for_month = dataframe[(dataframe["date"].dt.month == month) & (dataframe["date"].dt.year == year)]
+            incidents_per_month.append(data_for_month.sum()["avalanche"])
+
+    print(incidents_per_month)
+    pyplot.bar(month_names, incidents_per_month)
+    pyplot.title("Registered incidents per month Jan 2017 - now")
+    pyplot.xlabel("year and month")
+    pyplot.ylabel("Registered incidents")
+    pyplot.xticks(rotation=50)
+
+    pyplot.savefig("plots/incidents_per_month_and_year.png")
+
+    pyplot.clf()
+    ###
     # Incidents for danger level
     ###
 
