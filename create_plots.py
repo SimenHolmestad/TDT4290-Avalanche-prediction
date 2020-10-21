@@ -96,7 +96,6 @@ def make_bar_plots(dataframe):
             data_for_month = dataframe[(dataframe["date"].dt.month == month) & (dataframe["date"].dt.year == year)]
             incidents_per_month.append(data_for_month.sum()["avalanche"])
 
-    print(incidents_per_month)
     pyplot.bar(month_names, incidents_per_month)
     pyplot.title("Registered incidents per month Jan 2017 - now")
     pyplot.xlabel("year and month")
