@@ -44,103 +44,93 @@ def get_avalanche_problem_data(forecast_df):
                     output_for_row[feature + "_" + str(av_problem_id)] = av_problem[feature]
 
         # Add row data to output dictionary
-        for key, value in output_for_row.item():
+        for key, value in output_for_row.items():
             avalanche_problem_dict[key].append(value)
-
+    
     return pd.DataFrame(avalanche_problem_dict)
 
 
 def get_mountain_weather_data(forecast_df):
-    possible_measurement_types = ["Nedbør", "Vindstyrke", "Temperatur"]
+    possible_measurement_types = ["Nedbør", "Vind", "Temperatur"]
     output_dict = {}
+    mountain_weather_features = ["CloudCoverId","Nedbor","Vindstyrke","Temperatur_min","Temperatur_max"]
+
     for feature in mountain_weather_features:
         output_dict[feature] = []
 
     # Loop through each row of dataframe
     for i in range(len(forecast_df.index)):
+
         mountain_weather_dict = forecast_df["MountainWeather"][i]
-        if ("CloudCoverId" in mountain_weather_dict.keys):
+        #print("mountain_weather_dict: ",mountain_weather_dict)
+        if mountain_weather_dict == None:
+            output_dict["CloudCoverId"].append(0)
+            output_dict["Nedbor"].append(0)
+            output_dict["Vindstyrke"].append(0)
+            output_dict["Temperatur_min"].append(0)
+            output_dict["Temperatur_max"].append(0)
+            continue
+        # Append value of CloudCoverId to output_dict
+        if ("CloudCoverId" in mountain_weather_dict):
             output_dict["CloudCoverId"].append(mountain_weather_dict["CloudCoverId"])
         else:
             output_dict["CloudCoverId"].append(0)
 
         measurement_types = forecast_df["MountainWeather"][i]["MeasurementTypes"]
-        for type_dict in measurement_types:
-            if type_dict["Name"] == "Nedbør":
-                pass
-            if type_dict["Name"] == "Temperatur":
-                pass
+        
 
 
+        # Check if Nedbør exists in MountainWeather
+        nedbor_dict = next((item for item in measurement_types if item["Name"] == "Nedbør"), False)
+        
+        if nedbor_dict:
+            for measurement_type in measurement_types:
+                if measurement_type["Name"] == "Nedbør":
+                    measurement_sub_types = measurement_type["MeasurementSubTypes"]
 
-    new_df["date"] = date_list
-    cloud_id_list = []
-    nedbor_list = []
-    vind_list = []
-    temp_min_list = []
-    temp_max_list = []
-    print(len(new_df.index))
-    for i in range(len(new_df.index)):
-        try:
-            cloud_id_list.append(forecast_df["MountainWeather"][i]["CloudCoverId"])
-        except TypeError:
-            cloud_id_list.append(None)
+                    # Loop through subtypes of Nedbør and append the value of Gjennomsnitt to output_dict
+                    for sub_type in measurement_sub_types:
+                        if sub_type["Name"] == "Gjennomsnitt":
+                            output_dict["Nedbor"].append(sub_type["Value"])
+        else:
+            output_dict["Nedbor"].append(0)
 
-        try:
-            for j in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"])):
-                # Nedbør
-                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Nedbør":
+        # Check if Vind exists in MountainWeather
+        vind_dict = next((item for item in measurement_types if item["Name"] == "Vind"), False)
 
-                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
+        if vind_dict:
+            for measurement_type in measurement_types:
+                if measurement_type["Name"] == "Vind":        
+                    measurement_sub_types = measurement_type["MeasurementSubTypes"]
+                    
+                    # Loop through subtypes of Vind and append the value of Styrke to output_dict
+                    for sub_type in measurement_sub_types:
+                        if sub_type["Name"] == "Styrke":
+                            output_dict["Vindstyrke"].append(sub_type["Value"])
+        else:
+            output_dict["Vindstyrke"].append(0)
 
-                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Gjennomsnitt":
-                            try:
-                                nedbor_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
-                            except TypeError:
-                                nedbor_list.append(None)
-                # Vind
-                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Vind":
+        # Check if Temperatur exists in MountainWeather
+        temp_dict = next((item for item in measurement_types if item["Name"] == "Temperatur"), False)
 
-                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
+        if temp_dict:
+            for measurement_type in measurement_types:
+                if measurement_type["Name"] == "Temperatur":
+                    measurement_sub_types = measurement_type["MeasurementSubTypes"]
 
-                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Styrke":
-                            try:
-                                vind_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
-                            except TypeError:
-                                vind_list.append(None)
+                    # Loop through subtypes of Temperatur and append the value of Min and Maks to output_dict
+                    for sub_type in measurement_sub_types:
+                        if sub_type["Name"] == "Min":
+                            output_dict["Temperatur_min"].append(sub_type["Value"])
 
-                # Temperatur
-                if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["Name"] == "Temperatur":
-
-                    for k in range(len(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"])):
-
-                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Maks":
-                            try:
-                                temp_max_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
-                            except TypeError:
-                                temp_max_list.append(None)
-
-                        if forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Name"] == "Min":
-                            try:
-                                temp_min_list.append(forecast_df["MountainWeather"][i]["MeasurementTypes"][j]["MeasurementSubTypes"][k]["Value"])
-                            except TypeError:
-                                temp_min_list.append(None)
-
-        except TypeError:
-            nedbor_list.append(None)
-            vind_list.append(None)
-            temp_max_list.append(None)
-            temp_min_list.append(None)
-
-    new_df["CloudCoverId"] = cloud_id_list
-    new_df["Nedbor"] = nedbor_list
-    new_df["Vindstyrke"] = vind_list
-    new_df["Temperatur_min"] = temp_min_list
-    new_df["Temperatur_max"] = temp_max_list
-    av_prob_df = pd.DataFrame.from_dict(new_dict)
-
-    avalanche_forecast_df = new_df.join(av_prob_df)
-    return avalanche_forecast_df
+                        if sub_type["Name"] == "Maks":
+                            output_dict["Temperatur_max"].append(sub_type["Value"])
+        else:
+            output_dict["Temperatur_min"].append(0)
+            output_dict["Temperatur_max"].append(0)
+        #print(output_dict["Nedbor"],output_dict["Vindstyrke"],output_dict["Temperatur_min"],output_dict["Temperatur_max"])
+    print(pd.DataFrame(output_dict))
+    return pd.DataFrame(output_dict)
 
 
 def create_avalanche_forecast_url(seasons_to_check):
@@ -174,10 +164,15 @@ def get_avalanche_forecast_data(seasons_to_check):
     forecast_df = forecast_df.rename(columns={"RegionId": 'region'})
 
     base_data_df = forecast_df.filter(items=['date', 'region', 'DangerLevel'])
+
+    print(base_data_df)
+
     mountain_weather_df = get_mountain_weather_data(forecast_df)
     avalanche_problem_df = get_avalanche_problem_data(forecast_df)
 
-    return pd.join([base_data_df, mountain_weather_df, avalanche_problem_df])
+    join_df = mountain_weather_df.join(avalanche_problem_df)
+
+    return base_data_df.join(join_df)
 
 
 def create_db_connection() -> Engine:
@@ -287,22 +282,25 @@ def create_calendar_and_region_data(years_to_check, list_of_regions):
 
 def main():
     # For seasons, 2017 means the season 2017-2018
-    seasons_to_check = [2017, 2018, 2019]
+    seasons_to_check = [2017,2018,2019]
     list_of_regions = [3003, 3006, 3007, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3022, 3023, 3024, 3027, 3028, 3029, 3031, 3032, 3034, 3035, 3037]
-
+    
     # Create dictionary containing calendar an region info
     data_dict = create_calendar_and_region_data(seasons_to_check, list_of_regions)
-
+    
     # Add avalanche information
     avalanches = get_avalanche_data(data_dict['region'], data_dict['date'])
-    data_dict['avalanches'] = avalanches
-
+    data_dict['avalanche'] = avalanches
+    
     # Create dataframe for current data
     region_date_and_avalanche_df = pd.DataFrame(data_dict)
 
     # Create dataframe for historic avalanche forecast
     avalanche_forecast_df = get_avalanche_forecast_data(seasons_to_check)
 
+    
+
+    
     # Merge dataframes
     dataset = pd.merge(region_date_and_avalanche_df, avalanche_forecast_df, how='inner', on=['date', 'region'])
 
@@ -313,11 +311,12 @@ def main():
     dataset_file_content = dataset_file_content.replace("--", "-")
     dataset_file_content = dataset_file_content.replace("|", "")
 
+
     # Write dataset to file
     f = open("dataset.csv", "w")
     f.write(dataset_file_content)
     f.close()
-
+    
 
 if __name__ == "__main__":
     main()
