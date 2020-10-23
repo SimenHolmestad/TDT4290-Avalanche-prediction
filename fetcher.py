@@ -126,6 +126,16 @@ def get_mountain_weather_data(forecast_df):
     return pd.DataFrame(output_dict)
 
 
+def correct_mountain_weather(df):
+    """For some mountain weather data we get null values from the api.
+    For now we just replace these with 0-values"""
+    print("Distribution of null/nan values for mountain weather:")
+    print(df.isna().sum())
+    print("Setting nan/null values to 0 for mountain weather")
+    df.fillna(0, inplace=True)
+    return df
+
+
 def create_avalanche_forecast_url(seasons_to_check):
     url_format_string = 'https://api01.nve.no/hydrology/forecast/avalanche/v5.0.1/api/Archive/Warning/All/1/{}/{}/json'
     first_season = seasons_to_check[0]
@@ -161,6 +171,7 @@ def get_avalanche_forecast_data(seasons_to_check):
     print(base_data_df)
 
     mountain_weather_df = get_mountain_weather_data(forecast_df)
+    mountain_weather_df = correct_mountain_weather(mountain_weather_df)
     avalanche_problem_df = get_avalanche_problem_data(forecast_df)
 
     join_df = mountain_weather_df.join(avalanche_problem_df)
