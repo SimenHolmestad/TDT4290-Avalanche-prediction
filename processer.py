@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def Process():
-    df = pd.read_csv('result1.csv')
+    df = pd.read_csv('dataset.csv')
     data_list = []
     dates = []
 
@@ -58,3 +58,7 @@ def Process():
 
     # Makes a csv file of the processed data.
     df_processed_data.to_csv("processed_data.csv", index=False)
+
+
+if __name__ == "__main__":
+    Process()
