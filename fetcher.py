@@ -6,7 +6,6 @@ import sqlalchemy as sqla
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.engine import create_engine
 import holidays
-import time
 from io import StringIO
 
 
@@ -46,24 +45,21 @@ def get_avalanche_problem_data(forecast_df):
         # Add row data to output dictionary
         for key, value in output_for_row.items():
             avalanche_problem_dict[key].append(value)
-    
+
     return pd.DataFrame(avalanche_problem_dict)
 
 
 def get_mountain_weather_data(forecast_df):
-    possible_measurement_types = ["Nedbør", "Vind", "Temperatur"]
     output_dict = {}
-    mountain_weather_features = ["CloudCoverId","Nedbor","Vindstyrke","Temperatur_min","Temperatur_max"]
+    mountain_weather_features = ["CloudCoverId", "Nedbor", "Vindstyrke", "Temperatur_min", "Temperatur_max"]
 
     for feature in mountain_weather_features:
         output_dict[feature] = []
 
     # Loop through each row of dataframe
     for i in range(len(forecast_df.index)):
-
         mountain_weather_dict = forecast_df["MountainWeather"][i]
-        #print("mountain_weather_dict: ",mountain_weather_dict)
-        if mountain_weather_dict == None:
+        if mountain_weather_dict is None:
             output_dict["CloudCoverId"].append(0)
             output_dict["Nedbor"].append(0)
             output_dict["Vindstyrke"].append(0)
@@ -77,12 +73,10 @@ def get_mountain_weather_data(forecast_df):
             output_dict["CloudCoverId"].append(0)
 
         measurement_types = forecast_df["MountainWeather"][i]["MeasurementTypes"]
-        
-
 
         # Check if Nedbør exists in MountainWeather
         nedbor_dict = next((item for item in measurement_types if item["Name"] == "Nedbør"), False)
-        
+
         if nedbor_dict:
             for measurement_type in measurement_types:
                 if measurement_type["Name"] == "Nedbør":
@@ -100,9 +94,9 @@ def get_mountain_weather_data(forecast_df):
 
         if vind_dict:
             for measurement_type in measurement_types:
-                if measurement_type["Name"] == "Vind":        
+                if measurement_type["Name"] == "Vind":
                     measurement_sub_types = measurement_type["MeasurementSubTypes"]
-                    
+
                     # Loop through subtypes of Vind and append the value of Styrke to output_dict
                     for sub_type in measurement_sub_types:
                         if sub_type["Name"] == "Styrke":
@@ -128,8 +122,7 @@ def get_mountain_weather_data(forecast_df):
         else:
             output_dict["Temperatur_min"].append(0)
             output_dict["Temperatur_max"].append(0)
-        #print(output_dict["Nedbor"],output_dict["Vindstyrke"],output_dict["Temperatur_min"],output_dict["Temperatur_max"])
-    print(pd.DataFrame(output_dict))
+
     return pd.DataFrame(output_dict)
 
 
@@ -282,25 +275,22 @@ def create_calendar_and_region_data(years_to_check, list_of_regions):
 
 def main():
     # For seasons, 2017 means the season 2017-2018
-    seasons_to_check = [2017,2018,2019]
+    seasons_to_check = [2017, 2018, 2019]
     list_of_regions = [3003, 3006, 3007, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3022, 3023, 3024, 3027, 3028, 3029, 3031, 3032, 3034, 3035, 3037]
-    
+
     # Create dictionary containing calendar an region info
     data_dict = create_calendar_and_region_data(seasons_to_check, list_of_regions)
-    
+
     # Add avalanche information
     avalanches = get_avalanche_data(data_dict['region'], data_dict['date'])
     data_dict['avalanche'] = avalanches
-    
+
     # Create dataframe for current data
     region_date_and_avalanche_df = pd.DataFrame(data_dict)
 
     # Create dataframe for historic avalanche forecast
     avalanche_forecast_df = get_avalanche_forecast_data(seasons_to_check)
 
-    
-
-    
     # Merge dataframes
     dataset = pd.merge(region_date_and_avalanche_df, avalanche_forecast_df, how='inner', on=['date', 'region'])
 
@@ -311,12 +301,11 @@ def main():
     dataset_file_content = dataset_file_content.replace("--", "-")
     dataset_file_content = dataset_file_content.replace("|", "")
 
-
     # Write dataset to file
     f = open("dataset.csv", "w")
     f.write(dataset_file_content)
     f.close()
-    
+
 
 if __name__ == "__main__":
     main()
