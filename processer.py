@@ -85,4 +85,6 @@ def Process():
     # Makes a csv file of the processed data.
     df_processed_data.to_csv("processed_data.csv", index=False)
 
-prosecc_data = Process()
+
+if __name__ == "__main__":
+    Process()
