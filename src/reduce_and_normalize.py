@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def Process():
-    df = pd.read_csv('dataset.csv')
+    df = pd.read_csv('../data/dataset.csv')
     data_list = []
     dates = []
 
@@ -109,7 +109,7 @@ def Process():
                                  'aval_probability_id_50']
 
     # Makes a csv file of the processed data
-    df_processed_data.to_csv("processed_data.csv", index=False)
+    df_processed_data.to_csv("../data/processed_data.csv", index=False)
 
 
 if __name__ == "__main__":

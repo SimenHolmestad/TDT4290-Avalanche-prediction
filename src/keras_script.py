@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def test_model_on_dataset(model):
-    df = pd.read_csv("balanced_dataset.csv")
+    df = pd.read_csv("../data/balanced_dataset.csv")
 
     rows = list(df.loc[:, df.columns != "avalanche"].to_numpy())
 
@@ -55,7 +55,7 @@ def test_model_on_dataset(model):
     plt.xlabel("Probabilities")
     plt.ylabel("Number of forecasts")
     plt.xlim(0, 1)
-    plt.savefig("plots/probabilities_where_avalanche.png", dpi=300)
+    plt.savefig("../plots/probabilities_where_avalanche.png", dpi=300)
     plt.clf()
 
     # Plot prediction values for not avalanche
@@ -70,14 +70,14 @@ def test_model_on_dataset(model):
     plt.xlabel("Probabilities")
     plt.ylabel("Number of forecasts")
     plt.xlim(0, 1)
-    plt.savefig("plots/probabilities_where_not_avalanche.png", dpi=300)
+    plt.savefig("../plots/probabilities_where_not_avalanche.png", dpi=300)
     plt.clf()
 
 
 print("Reading dataset")
 
 # Read and shuffle dataset
-df = pd.read_csv("balanced_dataset.csv").sample(frac=1)
+df = pd.read_csv("../data/balanced_dataset.csv").sample(frac=1)
 
 
 # Initialize hyperparameters

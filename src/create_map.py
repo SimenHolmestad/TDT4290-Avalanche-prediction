@@ -19,7 +19,7 @@ def create_map(forecast_map, number_of_values):
         number_of_values (int): The maximum possible value for danger_value in the dictionary
     """
 
-    with open('forecast_areas.json') as f:
+    with open('../resources/forecast_areas.json') as f:
         json_map_data = json.load(f)
 
     forecast_region_shapes = {}
@@ -49,7 +49,7 @@ def create_map(forecast_map, number_of_values):
         # Print outline of region
         plt.plot(x, y, "k")
 
-    plt.savefig("plots/map.png", dpi=300)
+    plt.savefig("../plots/map.png", dpi=300)
 
 
 def main():
