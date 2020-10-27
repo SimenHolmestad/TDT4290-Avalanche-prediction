@@ -12,11 +12,11 @@ number_of_not_avalanches = len(not_avalanches.index)
 
 print("Number of days with avalanches:", number_of_avalanches)
 print("Number of days without avalanches:", number_of_not_avalanches)
-print("Ratio of days with avalanches:", number_of_avalanches/len(not_avalanches))
+print("Ratio of days with avalanches:", number_of_avalanches / len(not_avalanches))
 print()
 
 print("Sampling {} rows with no avalanches".format(number_of_avalanches))
-sample_of_not_avalanches = not_avalanches.sample(n = number_of_avalanches)
+sample_of_not_avalanches = not_avalanches.sample(n=number_of_avalanches)
 
 new_dataset = pd.concat([avalanches, sample_of_not_avalanches])
 

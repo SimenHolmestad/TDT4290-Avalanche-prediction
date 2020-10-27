@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def test_model_on_dataset(model):
     df = pd.read_csv("balanced_dataset.csv")
 
@@ -42,7 +43,6 @@ def test_model_on_dataset(model):
     print("Mean prediction value for avalanche:", mean_prediction_value_for_avalanche)
     print("Mean prediction value for not avalanche:", mean_prediction_value_for_not_avalanche)
 
-
     # Plot prediction values for avalanche
     prediction_values_for_avalanche = [round(x, 2) for x in prediction_values_for_avalanche]
     unique, counts = np.unique(prediction_values_for_avalanche, return_counts=True)
@@ -57,7 +57,6 @@ def test_model_on_dataset(model):
     plt.xlim(0, 1)
     plt.savefig("plots/probabilities_where_avalanche.png", dpi=300)
     plt.clf()
-
 
     # Plot prediction values for not avalanche
     prediction_values_for_not_avalanche = [round(x, 2) for x in prediction_values_for_not_avalanche]
@@ -74,8 +73,8 @@ def test_model_on_dataset(model):
     plt.savefig("plots/probabilities_where_not_avalanche.png", dpi=300)
     plt.clf()
 
-print("Reading dataset")
 
+print("Reading dataset")
 
 # Read and shuffle dataset
 df = pd.read_csv("balanced_dataset.csv").sample(frac=1)
