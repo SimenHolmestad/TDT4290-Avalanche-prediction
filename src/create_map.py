@@ -3,6 +3,8 @@ from shapely.geometry import shape
 import matplotlib.pyplot as plt
 import random
 from colour import Color
+import pandas as pd
+from tensorflow import keras
 
 
 def create_map(forecast_map, number_of_values):
@@ -56,13 +58,36 @@ def main():
     number_of_values = 3
     forecast_region_ids = [3038, 3044, 3041, 3006, 3008, 3032, 3034, 3043, 3037, 3018, 3033, 3027, 3029, 3013, 3028, 3014, 3010, 3025, 3009, 3019, 3015, 3042, 3045, 3005, 3046, 3036, 3023, 3016, 3012, 3020, 3024, 3017, 3039, 3022, 3011, 3007, 3035, 3040, 3031, 3026, 3021, 3030]
 
-    # Create dummy forecast map
-    forecast_map = {}
-    for region_id in forecast_region_ids:
-        forecast_map[region_id] = random.randint(0, number_of_values - 1)
+    dummy_df = pd.read_csv("../resources/input_mock_data.csv")
+
+    region_data_df = dummy_df.copy()
+    region_data_df.drop("avalanche", axis=1, inplace=True)
+    region_data_df.drop("region", axis=1, inplace=True)
+    region_data_list = list(region_data_df.to_numpy())
+
+
+    for i in range(len(region_data_list)):
+        region_data_list[i] = [float(value) for value in region_data_list[i]]
+
+    model = keras.models.load_model('../resources/model.tf')
+    model_predictions = []
+    for region_data in region_data_list:
+        prediction = model.predict([region_data])[0][0]
+        model_predictions.append(int(prediction * 100))
+
+    region_ids = dummy_df["region"]
 
     # Create map plot
-    create_map(forecast_map, 3)
+    lowest_value = min(model_predictions)
+    highest_value = max(model_predictions)
+
+    number_of_values = highest_value - lowest_value
+    model_predictions = [x - lowest_value for x in model_predictions]
+    forecast_map = dict(zip(region_ids, model_predictions))
+
+    plt.title("Relative values for model predictions")
+
+    create_map(forecast_map, number_of_values + 1)
 
 
 if __name__ == "__main__":
