@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("dataset.csv")
+df = pd.read_csv("processed_data.csv")
 
 # Get rows with an avalanche
 
