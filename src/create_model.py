@@ -22,13 +22,13 @@ train_df, test_df = train_test_split(df, test_size=0.2)
 train_df, validation_df = train_test_split(train_df, test_size=0.1)
 
 # Convert training-, test- and validation-data to numpy arrays of correct form
-x_training_data = train_df.loc[:, df.columns != "avalanche"].to_numpy()
+x_training_data = train_df.loc[:, train_df.columns != "avalanche"].to_numpy()
 y_training_data = np.array([(x, abs(x - 1)) for x in train_df["avalanche"]])
 
-x_testing_data = test_df.loc[:, df.columns != "avalanche"].to_numpy()
+x_testing_data = test_df.loc[:, test_df.columns != "avalanche"].to_numpy()
 y_testing_data = np.array([(x, abs(x - 1)) for x in test_df["avalanche"]])
 
-x_validation_data = validation_df.loc[:, df.columns != "avalanche"].to_numpy()
+x_validation_data = validation_df.loc[:, validation_df.columns != "avalanche"].to_numpy()
 y_validation_data = np.array([(x, abs(x - 1)) for x in validation_df["avalanche"]])
 
 # Create the model

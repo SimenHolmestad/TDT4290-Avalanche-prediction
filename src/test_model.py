@@ -7,11 +7,12 @@ from tensorflow import keras
 def test_model_on_dataset(model):
     df = pd.read_csv("../data/balanced_dataset.csv")
 
+    # Get rows on right format
     rows = list(df.loc[:, df.columns != "avalanche"].to_numpy())
-
     for i in range(len(rows)):
         rows[i] = [float(value) for value in rows[i]]
 
+    # Get labels (true values)
     labels = df["avalanche"]
 
     prediction_values_for_avalanche = []
@@ -45,9 +46,6 @@ def test_model_on_dataset(model):
     prediction_values_for_avalanche = [round(x, 2) for x in prediction_values_for_avalanche]
     unique, counts = np.unique(prediction_values_for_avalanche, return_counts=True)
 
-    print("Unique values for avalanche:", unique)
-    print("Count values for avalanche:", counts)
-
     plt.plot(unique, counts)
     plt.title("Distribution of probabilities for forecast where avalanche happened")
     plt.xlabel("Probabilities")
@@ -60,9 +58,6 @@ def test_model_on_dataset(model):
     prediction_values_for_not_avalanche = [round(x, 2) for x in prediction_values_for_not_avalanche]
     unique, counts = np.unique(prediction_values_for_not_avalanche, return_counts=True)
 
-    print("Unique values for not avalanche:", unique)
-    print("Count values for not avalanche:", counts)
-
     plt.plot(unique, counts)
     plt.title("Distribution of probabilities for forecast where avalanches did not happen")
     plt.xlabel("Probabilities")
@@ -70,6 +65,7 @@ def test_model_on_dataset(model):
     plt.xlim(0, 1)
     plt.savefig("../plots/probabilities_where_not_avalanche.png", dpi=300)
     plt.clf()
+    print("Plots were saved to the plot folder")
 
 
 print("Loading model...")
