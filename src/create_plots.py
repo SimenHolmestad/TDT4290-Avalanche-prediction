@@ -14,7 +14,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Region ID")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/Observations_for_region.png")
+    pyplot.savefig("../plots/Observations_for_region.png")
 
     pyplot.clf()
 
@@ -33,7 +33,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Region ID")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_region.png")
+    pyplot.savefig("../plots/incidents_per_region.png")
 
     pyplot.clf()
 
@@ -54,7 +54,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Weekday")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_weekday.png")
+    pyplot.savefig("../plots/incidents_per_weekday.png")
 
     pyplot.clf()
 
@@ -76,7 +76,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("month")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_month.png")
+    pyplot.savefig("../plots/incidents_per_month.png")
 
     pyplot.clf()
 
@@ -86,10 +86,10 @@ def make_bar_plots(dataframe):
     incidents_per_month = []
     months = [1, 2, 3, 4, 5, 6, 12]
     years = [2017, 2018, 2019, 2020]
-    month_names = ["1.17", "2.17", "3.17", "4.17", "5.17", "6.17", "12.17", 
-                    "1.18", "2.18", "3.18", "4.18", "5.18", "6.18", "12.18",
-                    "1.19", "2.19", "3.19", "4.19", "5.19", "6.19", "12.19",
-                    "1.20", "2.20", "3.20", "4.20", "5.20", "6.20", "12.20"]
+    month_names = ["1.17", "2.17", "3.17", "4.17", "5.17", "6.17", "12.17",
+                   "1.18", "2.18", "3.18", "4.18", "5.18", "6.18", "12.18",
+                   "1.19", "2.19", "3.19", "4.19", "5.19", "6.19", "12.19",
+                   "1.20", "2.20", "3.20", "4.20", "5.20", "6.20", "12.20"]
     dataframe['date'] = pd.to_datetime(dataframe['date'], errors='coerce')
     for year in years:
         for month in months:
@@ -102,7 +102,7 @@ def make_bar_plots(dataframe):
     pyplot.ylabel("Registered incidents")
     pyplot.xticks(rotation=50)
 
-    pyplot.savefig("plots/incidents_per_month_and_year.png")
+    pyplot.savefig("../plots/incidents_per_month_and_year.png")
 
     pyplot.clf()
     ###
@@ -121,7 +121,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("danger level")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_danger_level.png")
+    pyplot.savefig("../plots/incidents_per_danger_level.png")
 
     pyplot.clf()
 
@@ -141,7 +141,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Temperatures")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_min_temperature.png")
+    pyplot.savefig("../plots/incidents_per_min_temperature.png")
 
     pyplot.clf()
 
@@ -161,7 +161,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Temperatures")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_max_temperature.png")
+    pyplot.savefig("../plots/incidents_per_max_temperature.png")
 
     pyplot.clf()
 
@@ -183,7 +183,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("cloud covers")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_cloud_cover.png")
+    pyplot.savefig("../plots/incidents_per_cloud_cover.png")
 
     pyplot.clf()
 
@@ -205,7 +205,7 @@ def make_bar_plots(dataframe):
     pyplot.ylabel("Registered incidents")
     pyplot.xticks(rotation=20)
 
-    pyplot.savefig("plots/incidents_per_wind_strength.png")
+    pyplot.savefig("../plots/incidents_per_wind_strength.png")
 
     pyplot.clf()
 
@@ -228,7 +228,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Rainfalls")
     pyplot.ylabel("Registered incidents")
 
-    pyplot.savefig("plots/incidents_per_rainfall.png")
+    pyplot.savefig("../plots/incidents_per_rainfall.png")
 
     pyplot.clf()
 
@@ -252,7 +252,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Danger level")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/distributions_of_danger_levels.png")
+    pyplot.savefig("../plots/distributions_of_danger_levels.png")
 
     pyplot.clf()
 
@@ -272,7 +272,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Temperatures")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/distributions_of_min_temperatures.png")
+    pyplot.savefig("../plots/distributions_of_min_temperatures.png")
 
     pyplot.clf()
 
@@ -292,7 +292,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Temperatures")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/distributions_of_max_temperature.png")
+    pyplot.savefig("../plots/distributions_of_max_temperature.png")
 
     pyplot.clf()
 
@@ -314,7 +314,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("cloud covers")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/distributions_of_cloud_cover.png")
+    pyplot.savefig("../plots/distributions_of_cloud_cover.png")
 
     pyplot.clf()
 
@@ -336,7 +336,7 @@ def make_bar_plots(dataframe):
     pyplot.ylabel("Data points")
     pyplot.xticks(rotation=20)
 
-    pyplot.savefig("plots/distributions_of_wind_strength.png")
+    pyplot.savefig("../plots/distributions_of_wind_strength.png")
 
     pyplot.clf()
 
@@ -357,7 +357,7 @@ def make_bar_plots(dataframe):
     pyplot.xlabel("Rainfalls")
     pyplot.ylabel("Data points")
 
-    pyplot.savefig("plots/distributions_of_rainfall.png")
+    pyplot.savefig("../plots/distributions_of_rainfall.png")
 
     pyplot.clf()
     pyplot.close()
@@ -379,11 +379,16 @@ def create_correlation_plot(dataframe, filename):
     pyplot.clf()
 
 
-dataframe = pd.read_csv("dataset.csv")
+def main():
+    dataframe = pd.read_csv("../data/dataset.csv")
 
-dataframe_without_problems = dataframe[['region', 'date', 'weekday', 'weekend', 'red_day', 'avalanche', 'DangerLevel', 'CloudCoverId', 'Nedbor', 'Vindstyrke', 'Temperatur_min', 'Temperatur_max']]
+    dataframe_without_problems = dataframe[['region', 'date', 'weekday', 'weekend', 'red_day', 'avalanche', 'DangerLevel', 'CloudCoverId', 'Nedbor', 'Vindstyrke', 'Temperatur_min', 'Temperatur_max']]
 
-make_bar_plots(dataframe)
-create_correlation_plot(dataframe_without_problems, "plots/seaborn_heatmap_without_problems.png")
+    make_bar_plots(dataframe)
+    create_correlation_plot(dataframe_without_problems, "../plots/seaborn_heatmap_without_problems.png")
 
-create_correlation_plot(dataframe, "plots/seaborn_heatmap.png")
+    create_correlation_plot(dataframe, "../plots/seaborn_heatmap.png")
+
+
+if __name__ == "__main__":
+    main()
