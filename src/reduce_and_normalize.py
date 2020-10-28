@@ -22,17 +22,14 @@ def Process():
     df["month"] = df["month"].replace(12, 0)
 
     # Change the strings in "Vindstyrke" with numbers.
-    df["Vindstyrke"] = df.replace(
-        {"Vindstyrke": {
-            "Stille/svak vind": 0,
-            "Bris": 1,
-            "Frisk bris": 2,
-            "Liten kuling": 3,
-            "Stiv kuling": 4,
-            "Sterk kuling": 5,
-            "Liten storm": 6,
-            "Storm": 7
-        }})
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Stille/svak vind", 0)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Bris", 1)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Frisk bris", 2)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Liten kuling", 3)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Stiv kuling", 4)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Sterk kuling", 5)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Liten storm", 6)
+    df["Vindstyrke"] = df["Vindstyrke"].replace("Storm", 7)
 
     # New columns with average temperature
     temp_mean = df.loc[:, ["Temperatur_min", "Temperatur_max"]]
