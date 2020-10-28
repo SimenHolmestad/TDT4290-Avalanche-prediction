@@ -68,7 +68,12 @@ def test_model_on_dataset(model):
     print("Plots were saved to the plot folder")
 
 
-print("Loading model...")
-model = keras.models.load_model('../resources/model.tf')
-print("Testing_model:")
-test_model_on_dataset(model)
+def main():
+    print("Loading model...")
+    model = keras.models.load_model('../resources/model.tf')
+    print("Testing_model:")
+    test_model_on_dataset(model)
+
+
+if __name__ == "__main__":
+    main()

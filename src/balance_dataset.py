@@ -1,26 +1,32 @@
 import pandas as pd
 
-df = pd.read_csv("../data/processed_data.csv")
 
-# Get rows with an avalanche
+def main():
+    df = pd.read_csv("../data/processed_data.csv")
 
-avalanches = df.loc[df["avalanche"] == 1]
-not_avalanches = df.loc[df["avalanche"] == 0]
+    # Get rows with an avalanche
 
-number_of_avalanches = len(avalanches.index)
-number_of_not_avalanches = len(not_avalanches.index)
+    avalanches = df.loc[df["avalanche"] == 1]
+    not_avalanches = df.loc[df["avalanche"] == 0]
 
-print("Number of days with avalanches:", number_of_avalanches)
-print("Number of days without avalanches:", number_of_not_avalanches)
-print("Ratio of days with avalanches:", number_of_avalanches / len(not_avalanches))
-print()
+    number_of_avalanches = len(avalanches.index)
+    number_of_not_avalanches = len(not_avalanches.index)
 
-print("Sampling {} rows with no avalanches".format(number_of_avalanches))
-sample_of_not_avalanches = not_avalanches.sample(n=number_of_avalanches)
+    print("Number of days with avalanches:", number_of_avalanches)
+    print("Number of days without avalanches:", number_of_not_avalanches)
+    print("Ratio of days with avalanches:", number_of_avalanches / len(not_avalanches))
+    print()
 
-new_dataset = pd.concat([avalanches, sample_of_not_avalanches])
+    print("Sampling {} rows with no avalanches".format(number_of_avalanches))
+    sample_of_not_avalanches = not_avalanches.sample(n=number_of_avalanches)
 
-filename = "../data/balanced_dataset.csv"
+    new_dataset = pd.concat([avalanches, sample_of_not_avalanches])
 
-new_dataset.to_csv(filename, index=False)
-print("Wrote {} rows to {}".format(len(new_dataset.index), filename))
+    filename = "../data/balanced_dataset.csv"
+
+    new_dataset.to_csv(filename, index=False)
+    print("Wrote {} rows to {}".format(len(new_dataset.index), filename))
+
+
+if __name__ == "__main__":
+    main()

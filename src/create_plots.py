@@ -379,11 +379,16 @@ def create_correlation_plot(dataframe, filename):
     pyplot.clf()
 
 
-dataframe = pd.read_csv("../data/dataset.csv")
+def main():
+    dataframe = pd.read_csv("../data/dataset.csv")
 
-dataframe_without_problems = dataframe[['region', 'date', 'weekday', 'weekend', 'red_day', 'avalanche', 'DangerLevel', 'CloudCoverId', 'Nedbor', 'Vindstyrke', 'Temperatur_min', 'Temperatur_max']]
+    dataframe_without_problems = dataframe[['region', 'date', 'weekday', 'weekend', 'red_day', 'avalanche', 'DangerLevel', 'CloudCoverId', 'Nedbor', 'Vindstyrke', 'Temperatur_min', 'Temperatur_max']]
 
-make_bar_plots(dataframe)
-create_correlation_plot(dataframe_without_problems, "../plots/seaborn_heatmap_without_problems.png")
+    make_bar_plots(dataframe)
+    create_correlation_plot(dataframe_without_problems, "../plots/seaborn_heatmap_without_problems.png")
 
-create_correlation_plot(dataframe, "../plots/seaborn_heatmap.png")
+    create_correlation_plot(dataframe, "../plots/seaborn_heatmap.png")
+
+
+if __name__ == "__main__":
+    main()
