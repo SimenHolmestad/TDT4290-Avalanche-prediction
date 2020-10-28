@@ -313,7 +313,7 @@ def main():
     dataset_file_content = dataset_file_content.replace("|", "")
 
     # Write dataset to file
-    f = open("dataset.csv", "w")
+    f = open("../data/dataset.csv", "w")
     f.write(dataset_file_content)
     f.close()
 
