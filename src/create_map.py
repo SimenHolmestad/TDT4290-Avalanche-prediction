@@ -6,6 +6,56 @@ import pandas as pd
 from tensorflow import keras
 
 
+region_name_dict = {
+    3003: "Nordenskiöld Land",
+    3006: "Finnmarkskysten",
+    3007: "Vest-Finnmark",
+    3009: "Nord-Troms",
+    3010: "Lyngen",
+    3011: "Tromsø",
+    3012: "Sør-Troms",
+    3013: "Indre Troms",
+    3014: "Lofoten og Vesterålen",
+    3015: "Ofoten",
+    3016: "Salten",
+    3017: "Svartisen",
+    3022: "Trollheimen",
+    3023: "Romsdal",
+    3024: "Sunnmøre",
+    3027: "Indre Fjordane",
+    3028: "Jotunheimen",
+    3029: "Indre Sogn",
+    3031: "Voss",
+    3032: "Hallingdal",
+    3034: "Hardanger",
+    3035: "Vest-Telemark",
+    3037: "Heiane",
+    3001: "Svalbard øst",
+    3002: "Svalbard vest",
+    3004: "Svalbard sør",
+    3005: "Øst-Finnmark",
+    3008: "Finnmarksvidda",
+    3018: "Helgeland",
+    3019: "Nord-Trøndelag",
+    3020: "Sør-Trøndelag",
+    3021: "Ytre Nordmøre",
+    3025: "Nord-Gudbrandsdalen",
+    3026: "Ytre Fjordane",
+    3030: "Ytre Sogn",
+    3033: "Hordalandskysten",
+    3036: "Rogalandskysten",
+    3038: "Agder sør",
+    3039: "Telemark sør",
+    3040: "Vestfold",
+    3041: "Buskerud sør",
+    3042: "Oppland sør",
+    3043: "Hedmark",
+    3044: "Akershus",
+    3045: "Oslo",
+    3046: "Østfold"
+}
+
+
 def create_map(forecast_map, number_of_values):
     """Creates a map plot containing all avalanche regions with a redness
     scale representing danger.
@@ -51,6 +101,7 @@ def create_map(forecast_map, number_of_values):
         plt.plot(x, y, "k")
 
     plt.savefig("../plots/map.png", dpi=300)
+    print("Map plot saved to plot folder")
 
 
 def main():
@@ -68,21 +119,37 @@ def main():
     model_predictions = []
     for region_data in region_data_list:
         prediction = model.predict([region_data])[0][0]
-        model_predictions.append(int(prediction * 100))
+        model_predictions.append(round(prediction, 2))
 
     region_ids = dummy_df["region"]
 
     # Create map plot
-    lowest_value = min(model_predictions)
-    highest_value = max(model_predictions)
+    percentage_model_predictions = [int(prediction * 100) for prediction in model_predictions]
+    lowest_value = min(percentage_model_predictions)
+    highest_value = max(percentage_model_predictions)
 
     number_of_values = highest_value - lowest_value
-    model_predictions = [x - lowest_value for x in model_predictions]
-    forecast_map = dict(zip(region_ids, model_predictions))
+    relative_predictions = [x - lowest_value for x in percentage_model_predictions]
+    forecast_map = dict(zip(region_ids, relative_predictions))
 
     plt.title("Relative values for model predictions")
 
     create_map(forecast_map, number_of_values + 1)
+
+    # Create dataframe containing model predictions for regions
+    region_name_list = []
+    for region_id in region_ids:
+        region_name = region_name_dict[region_id]
+        region_name_list.append(region_name)
+
+    df = pd.DataFrame({
+        "region_id": region_ids,
+        "region_name": region_name_list,
+        "model_prediction": model_predictions
+    })
+
+    print("Predictions for regions:")
+    print(df)
 
 
 if __name__ == "__main__":
