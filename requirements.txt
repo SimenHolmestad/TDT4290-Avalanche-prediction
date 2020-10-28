@@ -1,0 +1,11 @@
+pandas
+requests
+holidays
+sqlalchemy
+time
+tensorflow
+numpy
+matplotlib
+seaborn
+random
+json
