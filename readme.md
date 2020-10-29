@@ -1,92 +1,101 @@
+# Avalanche predction
+This repository was made as part of a student project for the subject TDT4290 – Customer Driven Project at NTNU. The goal for this part of the project was to predict where avalanches are going to happen based on previous avalanche data. We tried to do this using machine learning. Even though the project in the end did not work as expected (see conclusions further down), we hope this repo might be useful if someone were to continue the work at a later point in time.
+
+# Running the project
+There are two ways to run this project. You can either use jupyter notebook (instructions below) or run the python files in the `src`-folder. We suppose that using the jupyter notebook version is the easiest.
+
+# Running the jupyter notebook
+For running the jupyter notebook, you first need to install `jupyter` by writing (in ther terminal):
+
+```
+pip install jupyter
+```
+
+After doing this, you can run jupyter notebook by running:
+```
+jupyter notebook
+```
+
+# Running the python files separately
+If you want to have full control and run each individual python file, you can follow the instructions below.
+
 ## Setup
-You have to install the packages, run pip install -r requirements.txt
+To be able to run the prosject, you need to install the required packages by running `pip install -r requirements.txt`.
 
+## The src-folder
+All the python scripts are located in the src-folder. Since the scripts are dependent of each other. They should be run in the order described below.
 
+## fetcher.py
+**IMPORTANT NOTE**: The script `fetcher.py` will not work without access to our database. If you download this repo without having access to the database, the script will not work. Therefore, we have already run this script for you and saved the output data in the file `data/dataset.csv`.
 
-## src
-The scripts should be run in the order described below, because the scripts are dependent of each other.
-
-### fetcher.py
-Input: 
+Input:
 1. Avalanche forecast API
 2. External avalanche database
 
-Output: dataset.csv
+Output: `data/dataset.csv`
 
-The fetcher gathers data and merges them into a dataframe. 
+The `fetcher.py` script gathers data from the forecast API and our external before merging them into a single dataframe.
 
-NB: The external avalanche database may be unavailable, but it is still possible to run the dependent scripts below.  
+## reduce_and_normalize.py
+Input: `data/dataset.csv`
+Output: `data/processed_data.csv`
 
+This script reduces and cleans the features before normalizing the data. Currently, we do normalization such that all the output values are between 0 and 1.
+## balance_dataset.py
+Input: `data/processed_data.csv`
+Output: `data/balanced_dataset.csv`
 
-### reduce_and_normalize.py
-Input: dataset.csv
-Output: processed_data.csv
+The processed_data is not balanced, meaning that there are more data where there are no avalanches than data where there are avalanches (more 0 values for "avalanche" than 1 values). The `balance_dataset` script reduces the number of rows without an avalanche such that it becomes the same number of rows with and wothout an avalanche.
 
-The script reduces and cleans the features and normalizes the data, such that the values are between 0 and 1. 
+## create_model.py
+Input: `data/balanced_dataset.csv`
+Output: AI-model saved in `resources/model.tf`
 
+The script `create_model.py` creates the AI-model and trains it on the balanced dataset.
 
-### balance_dataset.py
-Input: processed_data.csv
-Output: balanced_dataset.csv
-
-The processed data are not balanced, meaning that there are more 0 values for "avalanche" than 1 values. 
-The script shuffles and chooses (at random) the same number 0 values as 1 values for "avalanche". 
-
-### create_model.py
-Input: balanced_dataset.csv
-Output: AI-model saved in resources/keras_model
-
-The script creates the AI-model and trains it on the balanced dataset. 
-
-
-### test_model.py
-Input: 
-1. AI-model from resources/keras_model
-2. Test data from ********
+## test_model.py
+Input:
+1. AI-model from `resources/keras_model`
+2. Test data from `resources/input_mock_data.csv`
 
 Output: Plots of accuracy of the model
 
 The script evaluates the model with test data, and provides plots for distribution of the accuracy.
 
+## create_plots.py
+Input: `data/dataset.csv`
+Output: .png files in the `plots` folder
 
-### create_plots.py
-Input: dataset.csv
-Output: png files in plots folder
+The script creates plots for the features in the original dataset. **Note**: The script plots data from the original dataset `dataset.csv` and not the processed versions.
 
-The script creates plots for the features in the dataset. 
+## create_map.py
+Input:
+1. AI-model from `resources/keras_model`
+2. Forecast regions from `resources/forecast_area.json`
+3. Input data from `resources/input_mock_data.csv`
 
+Output: Map of dangerlevel for each region. The map is saved in `plots` folder.
 
-### create_map.py
-Input: 
-1. AI-model from resources/keras_model
-2. Forecast regions from resources/forecast_area.json 
-3. Input data from resources/input_mock_data.csv
+The script `create_map.py` plots the model values
 
-Output: Map of dangerlevel for each region. The map is saved in plots folder.
+the dangerlevel of an avalanche for each region based on the input data with the AI model.
 
-This predicts the dangerlevel of an avalanche for each region based on the input data with the AI model. 
-
-
-## data
+# data
 This folder contains the datasets from scripts in src folder.
 
-### dataset.csv
+## dataset.csv
 Generated by script src/fetcher.py.
 
-NB: The dataset is up-to-date pr 27/10/2020. 
+NB: The dataset is up-to-date pr 27/10/2020.
 
+# resources
+The resources folder contains additional files which are needed for the project
 
-
-## resources
-
-### forecast_area.json
+## forecast_area.json
 JSON file containing information to create a map for visualization.
 
+## input_mock_data.csv
+This file contains the input for the AI-modell to predict avalanches for 1st of March 2020.
 
-### input_mock_data.csv
-This file contains the input for the AI-modell to predict avalanches for 1st of March 2020. 
-
-
-
-## plots
+# plots
 This folder contains the plots generated in src/create_plots.py and map from src/create_map.py
