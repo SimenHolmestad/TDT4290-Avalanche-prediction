@@ -56,7 +56,7 @@ region_name_dict = {
 }
 
 
-def create_map(forecast_map, number_of_values):
+def create_map(forecast_map, number_of_values, plot_filename):
     """Creates a map plot containing all avalanche regions with a redness
     scale representing danger.
 
@@ -100,12 +100,14 @@ def create_map(forecast_map, number_of_values):
         # Print outline of region
         plt.plot(x, y, "k")
 
-    plt.savefig("../plots/map.png", dpi=300)
+    plt.savefig("../plots/" + plot_filename, dpi=300)
+    plt.clf()
     print("Map plot saved to plot folder")
 
 
-def main():
-    dummy_df = pd.read_csv("../resources/input_mock_data.csv")
+def create_map_and_statistics_for_mock_data_file(filename, model):
+    file_path = "../resources/" + filename
+    dummy_df = pd.read_csv(file_path)
 
     region_data_df = dummy_df.copy()
     region_data_df.drop("avalanche", axis=1, inplace=True)
@@ -114,8 +116,6 @@ def main():
 
     for i in range(len(region_data_list)):
         region_data_list[i] = [float(value) for value in region_data_list[i]]
-
-    model = keras.models.load_model('../resources/model.tf')
     model_predictions = []
     for region_data in region_data_list:
         prediction = model.predict([region_data])[0][0]
@@ -132,10 +132,6 @@ def main():
     relative_predictions = [x - lowest_value for x in percentage_model_predictions]
     forecast_map = dict(zip(region_ids, relative_predictions))
 
-    plt.title("Relative values for model predictions")
-
-    create_map(forecast_map, number_of_values + 1)
-
     # Create dataframe containing model predictions for regions
     region_name_list = []
     for region_id in region_ids:
@@ -148,8 +144,22 @@ def main():
         "model_prediction": model_predictions
     })
 
-    print("Predictions for regions:")
+    print("Predictions for file {}:".format(file_path))
     print(df)
+
+    plt.title("Relative values for model predictions\n" + "for file \"{}\"".format(filename))
+    plot_filename = "map_for_" + filename.split(".")[0] + ".png"
+    print("Saving map to plots/" + plot_filename)
+    create_map(forecast_map, number_of_values + 1, plot_filename)
+
+
+def main():
+    model = keras.models.load_model('../resources/model.tf')
+    filenames = ["input_mock_data_1_of_march.csv",
+                 "input_mock_data_16_of_january.csv"]
+
+    for filename in filenames:
+        create_map_and_statistics_for_mock_data_file(filename, model)
 
 
 if __name__ == "__main__":
