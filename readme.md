@@ -6,7 +6,7 @@ The dataset is fetched from [the norwegian avalanche forecast api](http://api.nv
 
 Currently, we are only using data from the last 3 years, because we do not have avalanche forecast information for earlier times.
 
-More info about the data and fetching can be found [in the data-secton](#data), and more info about how the data is processed is found in [here](#Feature_analysis.xlsx)
+More info about the data and fetching can be found [in the data-secton](#data), and more info about how the data is processed is found in the file Feature_analysis.xlsx.
 
 # Running the project
 There are two ways to run this project. You can either use jupyter notebook (instructions below) or run the python files in the `src`-folder. We suppose that using the jupyter notebook version is the easiest.
