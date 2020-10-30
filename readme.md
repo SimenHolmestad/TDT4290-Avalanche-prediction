@@ -114,7 +114,7 @@ This folder contains the plots generated in src/create_plots.py and map from src
 
 # Conclusions
 ## Results
-The results were not as good as we hoped for, and the model gives different results each time we create it. This is seen very clearly by creating the map plot (showing the results of the model on mock data relative to each region), create the model again and create a new map plot. The plot will change dramatically, as the model does not seem to find a general global optimum.
+The results were not as good as we hoped for, and the model gives different results each time we create it. This is seen very clearly on the map plots (showing the results of the model on mock data relative to each region). Create the model again and create a new map plot and you will see the plot changing dramatically, as the model does not seem to find a general global optimum.
 
 We believe some of the reasons why the model does not wok as good as we hoped are:
 ### We do not have sufficient data
@@ -122,7 +122,7 @@ Machine learning in general is very data heavy, and currently we are only using 
 ### There are too few correlations in the data
 The domain of avalanche prediction is dificult for machine learning as there is in general no clear correlations for when an avalanche will occur. The same weather, date and avalanche prediction data can be seen for many days while only a very few of those days will have an avalanche. It is therefore very dificult for the method to seperate our training examples into places where avalanches will happen and not. A correlation plot is included in the jupyter notebook, where we can see that very few variables corralate with our label-variable "avalanche". Again, since the correlation are not that evident, it might be good to have more data. The correlation plot is also shown below:
 
-![Correlations plot for reduced features](https://raw.githubusercontent.com/SimenHolmestad/TDT4290-Avalanche-prediction/master/plots/Correlation-plot-reduced%20features.png)
+![Correlations plot for reduced features](https://raw.githubusercontent.com/SimenHolmestad/TDT4290-Avalanche-prediction/master/plots/seaborn_heatmap_processed_data.png)
 ### This is **not** a binary classification problem
 The method we have used is mostly used for classifying examples into binary categories. It seems that this method doesn't work very well with avalanches since the fact that an avalanche has happened is a combination of bad weather and snow conditions, how many people are present in the mountains and how cautious these people are. If you ask experts whether or not an avalanche will happen tomorrow, they will not have an exact answer, since there are so many uncertain variables involved. (they might believe there are higher or lower risk for avalanches, but they cannot be certain). This means there are no "ground truth" for our classification-data (labels).
 

@@ -386,8 +386,10 @@ def main():
 
     make_bar_plots(dataframe)
     create_correlation_plot(dataframe_without_problems, "../plots/seaborn_heatmap_without_problems.png")
-
     create_correlation_plot(dataframe, "../plots/seaborn_heatmap.png")
+
+    dataframe_processed_data = pd.read_csv("../data/processed_data.csv")
+    create_correlation_plot(dataframe_processed_data, "../plots/seaborn_heatmap_processed_data.png")
 
 
 if __name__ == "__main__":
