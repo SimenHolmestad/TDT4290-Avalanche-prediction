@@ -8,3 +8,4 @@ matplotlib
 seaborn
 colour
 shapely
+sklearn
